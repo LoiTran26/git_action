@@ -1,1 +1,49 @@
+name: Build STM32F103 blink_led project
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Make
+        run: sudo apt-get update && sudo apt-get install -y make && sudo apt-get install bzip2 -y
+      - name: Install ARM toolchain
+        run: >
+          wget
+          https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.07/gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2
+
+          tar -xvf gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2
+
+          sudo mv gcc-arm-none-eabi-10.3-2021.07 /usr/local/
+
+          echo 'export PATH=$PATH:/usr/local/gcc-arm-none-eabi-10.3-2021.07/bin'
+          >> ~/.bashrc
+
+          source ~/.bashrc
+      - name: Build blink_led project
+        run: |
+          cd Code_STM32/
+          make -f Makefile
+      - name: Save target binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: template_make.hex
+          path: Code_STM32/build/template_make.hex
+
+  flash:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Download target binary
+        uses: actions/download-artifact@v3
+        with:
+          name: template_make.hex
+      - name: Flash target
+        run: st-flash --format=ihex write template_make.hex
 
