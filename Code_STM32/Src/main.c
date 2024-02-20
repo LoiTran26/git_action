@@ -58,5 +58,5 @@ int main(void)
 		//GPIO_ResetBits(GPIOB, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
 		Delay_Ms(2000);
 	}
-	
+	 
 }
