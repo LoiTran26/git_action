@@ -45,5 +45,7 @@ jobs:
         with:
           name: template_make.hex
       - name: Flash target
-        run: st-flash --format=ihex write template_make.hex
+        run: |
+          st-flash erase
+          st-flash --format=ihex write template_make.hex
 
